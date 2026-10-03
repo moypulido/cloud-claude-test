@@ -103,6 +103,7 @@ const UNITS = [
   ['day', 24 * 3600],
   ['hour', 3600],
   ['minute', 60],
+  ['second', 1],
 ];
 
 export function relativeTime(date, now = new Date(), locale = 'es') {
@@ -111,5 +112,5 @@ export function relativeTime(date, now = new Date(), locale = 'es') {
   for (const [unit, size] of UNITS) {
     if (Math.abs(seconds) >= size) return format.format(Math.round(seconds / size), unit);
   }
-  return format.format(0, 'minute');
+  return format.format(0, 'second');
 }
