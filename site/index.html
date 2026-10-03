@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Repo Pulse</title>
+    <meta name="description" content="Pulso del repositorio: actividad, changelog y lenguajes, regenerado por GitHub Actions en cada push." />
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="assets/style.css" />
+    <script>
+      // Apply the saved theme before first paint to avoid a flash.
+      try {
+        const theme = localStorage.getItem('repo-pulse-theme');
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
+    <script type="module" src="assets/app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="wrap topbar-inner">
+        <a class="brand" href="./">
+          <img src="assets/favicon.svg" alt="" width="24" height="24" />
+          <span>Repo Pulse</span>
+        </a>
+        <div class="topbar-actions">
+          <a id="repo-link" class="ghost-link" hidden>Ver en GitHub</a>
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="Cambiar tema">
+            <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <section class="hero">
+        <p class="eyebrow">Generado por GitHub Actions · Publicado en GitHub Pages</p>
+        <h1 id="title">Pulso del repositorio</h1>
+        <p id="build-info" class="lede">Cargando datos…</p>
+      </section>
+
+      <ol class="pipeline" aria-label="Cómo se construye este sitio">
+        <li><span class="step">1</span><div><strong>git push</strong><span>Un commit llega a <code>main</code></span></div></li>
+        <li><span class="step">2</span><div><strong>GitHub Actions</strong><span>Lee <code>git log</code> y la API, genera <code>data.json</code></span></div></li>
+        <li><span class="step">3</span><div><strong>GitHub Pages</strong><span>Publica el sitio estático</span></div></li>
+      </ol>
+
+      <section class="tiles" id="tiles" aria-label="Resumen"></section>
+
+      <section class="card" aria-labelledby="activity-title">
+        <div class="card-head">
+          <div>
+            <h2 id="activity-title">Actividad</h2>
+            <p class="muted" id="activity-subtitle">Commits por día</p>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span>Menos</span>
+            <i class="swatch l0"></i><i class="swatch l1"></i><i class="swatch l2"></i><i class="swatch l3"></i><i class="swatch l4"></i>
+            <span>Más</span>
+          </div>
+        </div>
+        <div id="heatmap" class="heatmap"></div>
+        <details class="table-view">
+          <summary>Ver como tabla</summary>
+          <div id="activity-table"></div>
+        </details>
+      </section>
+
+      <div class="grid-2">
+        <section class="card" aria-labelledby="languages-title">
+          <div class="card-head">
+            <div>
+              <h2 id="languages-title">Lenguajes</h2>
+              <p class="muted">Líneas por lenguaje en los archivos rastreados</p>
+            </div>
+          </div>
+          <div id="languages" class="bars"></div>
+        </section>
+
+        <section class="card" aria-labelledby="files-title">
+          <div class="card-head">
+            <div>
+              <h2 id="files-title">Archivos más modificados</h2>
+              <p class="muted">Por número de commits que los tocan</p>
+            </div>
+          </div>
+          <div id="files"></div>
+        </section>
+      </div>
+
+      <section class="card" id="activity-card" aria-labelledby="api-title" hidden>
+        <div class="card-head">
+          <div>
+            <h2 id="api-title">Pull requests e issues</h2>
+            <p class="muted">Leídos de la API de GitHub durante el build; se refrescan a diario y con cada issue</p>
+          </div>
+        </div>
+        <div class="grid-2 inner">
+          <div>
+            <h3>Pull requests</h3>
+            <ul id="pulls" class="items"></ul>
+          </div>
+          <div>
+            <h3>Issues</h3>
+            <ul id="issues" class="items"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="changelog-title">
+        <div class="card-head">
+          <div>
+            <h2 id="changelog-title">Changelog</h2>
+            <p class="muted">Agrupado a partir de los prefijos de <a href="https://www.conventionalcommits.org/es/v1.0.0/">Conventional Commits</a></p>
+          </div>
+        </div>
+        <div id="changelog" class="changelog"></div>
+      </section>
+
+      <section class="card" aria-labelledby="history-title">
+        <div class="card-head">
+          <div>
+            <h2 id="history-title">Historial de commits</h2>
+            <p class="muted" id="history-subtitle"></p>
+          </div>
+        </div>
+        <ol id="history" class="timeline"></ol>
+      </section>
+    </main>
+
+    <footer class="wrap footer">
+      <p>Hecho con Claude Code · Se reconstruye solo con cada push · <a href="data.json">data.json</a></p>
+    </footer>
+
+    <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+  </body>
+</html>
