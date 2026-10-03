@@ -1,0 +1,15 @@
+{
+  "name": "repo-pulse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sitio estático que se reconstruye solo a partir del historial de Git y se publica en GitHub Pages.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test",
+    "serve": "node scripts/build.mjs && node scripts/serve.mjs"
+  }
+}
