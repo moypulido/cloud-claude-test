@@ -22,9 +22,12 @@ test('parseConventional splits type, scope and breaking marker', () => {
   });
 });
 
-test('parseCoAuthors keeps names only and dedupes', () => {
-  const body = 'Algo\n\nCo-Authored-By: Ana <ana@example.com>\nco-authored-by: Ana <ana@example.com>\nCo-authored-by: Luis Pérez <l@x.mx>';
-  assert.deepEqual(parseCoAuthors(body), ['Ana', 'Luis Pérez']);
+test('parseCoAuthors dedupes by name', () => {
+  const body = 'Algo\n\nCo-Authored-By: Ana <ana@example.com>\nco-authored-by: Ana <ana@example.com>\nCo-authored-by: Luis Pérez <L@x.mx>';
+  assert.deepEqual(parseCoAuthors(body), [
+    { name: 'Ana', email: 'ana@example.com' },
+    { name: 'Luis Pérez', email: 'l@x.mx' },
+  ]);
 });
 
 test('parseNumstat handles binaries and renames', () => {
@@ -54,7 +57,7 @@ test('parseLog reads a real repository', () => {
   git('add', '.');
   git('commit', '-q', '-m', 'feat: primer archivo');
   writeFileSync(join(dir, 'a.txt'), 'uno\ntres\n');
-  git('commit', '-q', '-am', 'fix(a): corrige | línea', '-m', 'Detalle\ncon\x1fseparador\n\nCo-Authored-By: Claude <noreply@anthropic.com>');
+  git('commit', '-q', '-am', 'fix(a): corrige | línea', '-m', 'Detalle\ncon\x1fseparador\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nCo-Authored-By: Ana bot <ANA@example.com>');
 
   const commits = parseLog(git('log', '--numstat', `--format=${LOG_FORMAT}`));
   assert.equal(commits.length, 2);

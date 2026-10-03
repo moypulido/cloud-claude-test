@@ -5,10 +5,10 @@ const RECORD = '\x1e';
 const FIELD = '\x1f';
 const HEADER_END = '\x1d';
 
-export const LOG_FORMAT = `${RECORD}%H${FIELD}%h${FIELD}%P${FIELD}%an${FIELD}%aI${FIELD}%s${FIELD}%b${HEADER_END}`;
+export const LOG_FORMAT = `${RECORD}%H${FIELD}%h${FIELD}%P${FIELD}%an${FIELD}%ae${FIELD}%aI${FIELD}%s${FIELD}%b${HEADER_END}`;
 
 const CONVENTIONAL = /^(?<type>[a-z]+)(?:\((?<scope>[^)]+)\))?(?<breaking>!)?:\s*(?<description>.+)$/i;
-const CO_AUTHOR = /^co-authored-by:\s*(.+?)\s*<[^>]*>\s*$/gim;
+const CO_AUTHOR = /^co-authored-by:\s*(.+?)\s*<([^>]*)>\s*$/gim;
 
 export function parseLog(raw) {
   return raw
@@ -21,7 +21,7 @@ function parseRecord(record) {
   const end = record.indexOf(HEADER_END);
   if (end === -1) throw new Error('Registro de git log sin fin de encabezado');
 
-  const [hash, short, parents, author, date, subject, ...bodyParts] = record.slice(0, end).split(FIELD);
+  const [hash, short, parents, author, email, date, subject, ...bodyParts] = record.slice(0, end).split(FIELD);
   const body = bodyParts.join(FIELD);
   const files = record
     .slice(end + 1)
@@ -34,7 +34,9 @@ function parseRecord(record) {
     hash,
     short,
     author,
-    coAuthors: parseCoAuthors(body).filter((name) => name !== author),
+    coAuthors: parseCoAuthors(body)
+      .filter((coAuthor) => coAuthor.name !== author && coAuthor.email !== email.toLowerCase())
+      .map((coAuthor) => coAuthor.name),
     date,
     subject,
     ...parseConventional(subject),
@@ -72,9 +74,13 @@ export function parseConventional(subject) {
   return { type: type.toLowerCase(), scope, breaking: Boolean(breaking), description };
 }
 
-// Names only: emails stay out of the published site.
+// Emails are only used to drop the author's own trailer; they never reach data.json.
 export function parseCoAuthors(body) {
-  return [...new Set([...body.matchAll(CO_AUTHOR)].map((match) => match[1]))];
+  const byName = new Map();
+  for (const [, name, email] of body.matchAll(CO_AUTHOR)) {
+    if (!byName.has(name)) byName.set(name, { name, email: email.trim().toLowerCase() });
+  }
+  return [...byName.values()];
 }
 
 function sum(items, key) {
