@@ -111,23 +111,31 @@ function renderTiles(commits) {
 }
 
 function renderHeatmap(commits) {
-  const counts = dailyCounts(commits);
-  const weeks = heatmapWeeks(counts);
-  const days = weeks.flat().filter((day) => !day.future);
-  const max = Math.max(1, ...days.map((day) => day.count));
-  const total = days.reduce((sum, day) => sum + day.count, 0);
-  const active = days.filter((day) => day.count > 0);
-
   const cell = 12;
   const gap = 3;
   const step = cell + gap;
   const left = 26;
   const top = 18;
+
+  // Fit as many weeks as the card allows at a readable size (13 weeks to a full year).
+  const available = $('heatmap').clientWidth || 600;
+  const zoom = available >= 600 ? 1.25 : 1;
+  const weekCount = Math.max(13, Math.min(52, Math.floor((available / zoom - left) / step)));
+
+  const counts = dailyCounts(commits);
+  const weeks = heatmapWeeks(counts, new Date(), weekCount);
+  const days = weeks.flat().filter((day) => !day.future);
+  const max = Math.max(1, ...days.map((day) => day.count));
+  const total = days.reduce((sum, day) => sum + day.count, 0);
+  const active = days.filter((day) => day.count > 0);
+
   const width = left + weeks.length * step;
   const height = top + 7 * step;
 
   const root = svg('svg', {
     viewBox: `0 0 ${width} ${height}`,
+    width: width * zoom,
+    height: height * zoom,
     role: 'img',
     'aria-label': `${plural(total, 'commit', 'commits')} en ${plural(active.length, 'día activo', 'días activos')} durante las últimas ${weeks.length} semanas`,
   });
@@ -384,6 +392,13 @@ async function main() {
   renderHeader(data);
   renderTiles(data.commits);
   renderHeatmap(data.commits);
+  let lastWidth = $('heatmap').clientWidth;
+  new ResizeObserver(() => {
+    const width = $('heatmap').clientWidth;
+    if (width === lastWidth) return;
+    lastWidth = width;
+    renderHeatmap(data.commits);
+  }).observe($('heatmap'));
   renderLanguages(data.languages);
   renderFiles(data.commits);
   renderActivity(data.activity);
